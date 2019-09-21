@@ -5,7 +5,10 @@ import axios from "axios";
 
 export default function CharacterList() {
   // TODO: Add useState to track data from useEffect
-  const [characters, setCharacters] = useState([]);
+  // searchTerm will save the data from the search input on every occurance of the change event.
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // searchResults is used to set the search result.
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
@@ -15,17 +18,17 @@ export default function CharacterList() {
       .then(response => {
         const data = response.data.results;
         const results = data.filter(item => {
-          return item.name.toLowerCase().includes(characters);
+          return item.name.toLowerCase().includes(searchTerm);
         });
         setSearchResults(results);
       })
       .catch(err => {
         console.log(err);
       });
-  }, [characters]);
+  }, [searchTerm]);
 
   const handleChange = event => {
-    setCharacters(event.target.value);
+    setSearchTerm(event.target.value);
   };
 
   return (
