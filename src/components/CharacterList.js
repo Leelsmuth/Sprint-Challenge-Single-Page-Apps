@@ -6,39 +6,33 @@ import axios from "axios";
 export default function CharacterList() {
   // TODO: Add useState to track data from useEffect
   const [characters, setCharacters] = useState([]);
-  const [initialCharacters, setInitialCharacters] = useState([]);
-
-  const handleChange = event => {
-    let list = initialCharacters;
-    list = list.filter(
-      item =>
-        item.name.toLowerCase().search(event.target.value.toLowerCase()) !== -1
-    );
-    setCharacters(list);
-  };
-
-  const getCharacter = () => {
-    axios
-      .get("https://rickandmortyapi.com/api/character/")
-      .then(response => {
-        console.log(response.data);
-        setCharacters(response.data.results);
-        setInitialCharacters(response.data.results);
-      })
-      .catch(error => {
-        console.error("Server Error", error);
-      });
-  };
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    getCharacter();
-  }, []);
+    axios
+      .get("https://rickandmortyapi.com/api/character/")
+
+      .then(response => {
+        const data = response.data.results;
+        const results = data.filter(item => {
+          return item.name.toLowerCase().includes(characters);
+        });
+        setSearchResults(results);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, [characters]);
+
+  const handleChange = event => {
+    setCharacters(event.target.value);
+  };
 
   return (
     <section className="character-list">
       <h2>Character List</h2>
       <SearchForm search={handleChange} />
-      {characters.map(character => (
+      {searchResults.map(character => (
         <CharacterCard
           key={character.id}
           name={character.name}
